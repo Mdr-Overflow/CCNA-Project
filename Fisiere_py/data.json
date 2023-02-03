@@ -1,0 +1,16 @@
+{
+   "SW0": {
+      "device_type": "cisco_ios",
+      "host": "192.168.0.253",
+      "username": "cisco",
+      "password": "savnet",
+      "secret": "SAVU"
+   },
+   "ISP": {
+      "device_type": "cisco_ios",
+      "host": "192.168.0.253",
+      "username": "cisco",
+      "password": "savnet",
+      "secret": "SAVU"
+   }
+}

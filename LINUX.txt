@@ -1,0 +1,248 @@
+#!/bin/bash
+
+echo -e "Ziua 0 : \n"
+
+mkdir Proiect
+cd Proiect
+touch updatedb.conf
+mkdir uptrack
+cd uptrack/
+touch trustdb.gpg
+touch uptrack.conf
+touch uptrack.conf.rpmnew
+cd ..
+touch vimrc virc vnstat.conf
+touch warnquota.conf
+touch webalizer.conf
+touch wgetrc
+mkdir Xll
+cd Xll/
+mkdir applnk fontpath.d
+mkdir prefdm
+cd ..
+mkdir xdg
+cd xdg/
+mkdir autostart
+cd autostart/
+touch 'gnome-keyring-daemon.desktop'
+touch 'restorecond.desktop'
+touch sealertauto.desktop
+cd ..
+mkdir xinetd.d
+rm -r xinetd.d/
+cd ..
+mkdir xinetd.d
+cd xinetd.d/
+touch rsync
+cd ..
+mkdir xml
+cd xml/
+touch catalog
+cd ..
+mkdir yum
+touch 'version-groups.conf'
+mkdir vars 'protected.d'
+mkdir pluginconf.d
+cd pluginconf.d/
+touch product-id.conf
+touch protectbase.conf
+touch rhnplugin.conf
+touch subscription-manager.conf
+cd ..
+cd ..
+cd Proiect
+mv pluginconf.d/ yum
+mv protected.d/ yum
+mv vars/ yum
+mv version-groups.conf yum
+mkdir rules.d
+cd rules.d/
+touch 60-fprint-autosuspend.rules
+touch 60-pcmcia.rules
+touch 60-raw.rules
+touch 70-persistent-cd.rules
+touch 70-persistent-net.rules
+touch 90-alsa.rules
+touch 90-hal.rules
+touch 91-drm-modeset.rules
+touch 98-kexec.rules
+cd ..
+touch udev.conf
+cd Xll
+touch prefdm
+chmod 700 prefdm
+cd ~/Proiect
+tree
+echo -e "Aceasta este structura arborescenta a directorului stabilit in Ziua 0 \n"
+
+#DAY 1:
+
+#1)
+mkdir Inginerie Vanzari IS
+
+#2)
+sudo groupadd -g 2000 Ingineri_MA
+sudo groupadd -g 3000 Vanzatori_MA
+sudo groupadd -g 4000 Ingineri_Software_MA
+
+#3)
+sudo groupadd -g 2000 Ingineri_MA
+sudo groupadd -g 3000 Vanzatori_MA
+sudo groupadd -g 4000 Ingineri_Software_MA
+sudo useradd Inginer_Sef_MA
+sudo useradd Vanzator_Sef_MA
+sudo useradd Inginer_Soft_Sef_MA
+sudo useradd -m -d /Proiect/Inginerie Inginer_Sef_MA
+sudo useradd -m -d /Proiect/Vanzari Vanzator_Sef_MA
+sudo useradd -m -d /Proiect/IS Inginer_Soft_Sef_MA
+
+#5) 
+sudo useradd -m -d /Proiect/Inginerie Inginer_junior1_MA
+sudo useradd -m -d /Proiect/Inginerie Inginer_junior2_MA
+sudo useradd -m -d /Proiect/Inginerie Vanzator_junior1_MA
+sudo useradd -m -d /Proiect/Inginerie Vanzator_junior2_MA
+sudo useradd -m -d /Proiect/Inginerie_Soft Inginer_Soft_junior1_MA
+sudo useradd -m -d /Proiect/Inginerie_Soft Inginer_Soft_junior2_MA
+
+echo -e "Au fost creati utilizatorii ceruti si grupele cerute, apoi pusi in grupe:\n"
+cd ../../../..
+cat etc/passwd | egrep "Inginer|Vanzator"
+
+cd ~/Proiect
+
+echo -e "Ziua 2 :\n"
+#DAY2:
+#*SCRIPT
+
+cat > User_Group_Creator <<\EOF
+#!/bin/bash
+
+echo "Introduce-ti un nume de grup"
+read NAME
+Error=0
+sudo groupadd $NAME"_MA"
+Com=$(echo $?)
+
+        if [ $Com -ne 0 ]
+        then
+            Error=1
+        fi
+
+        while [ $Error -eq 1 ]
+        do
+                if [ $Com -ne 0 ]
+                then
+                        echo "Incearca alt nume"
+                        read NAME
+                        sudo groupadd $NAME"_MA"
+                        Com=$(echo $?)
+                else
+                        Error=0
+                fi
+        done
+
+ Error=0
+
+echo "Introduce-ti un nume de user"
+read USER
+sudo useradd $USER"_MA"
+Com2=$(echo $?)
+
+        if [ $Com2 -ne 0 ]
+           then
+                  Error=1
+        fi
+
+        while [ $Error -eq 1 ]
+        do
+                if [ $Com2 -ne 0 ]
+                 then
+                        echo "Incearca alt nume"
+                        read USER
+                        sudo useradd $USER"_MA"
+                        Com2=$(echo $?)
+                 else
+                        Error=0
+                 fi
+        done
+
+echo "Parola userului este : "
+RANDOM_PASS=$(date | md5sum)
+echo $RANDOM_PASS
+printf '%s\n%s\n' "$RANDOM_PASS" "$RANDOM_PASS" | sudo passwd $USER"_MA"
+sudo usermod -a -G $NAME"_MA" $USER"_MA"
+echo "userul nou apartine grupului nou creat"
+mkdir $USER"_MA"/
+echo "Am creat director cu numele userului in root-ul directorului de proiect"
+sudo chown $USER"_MA" $USER"_MA"/
+sudo chgrp $NAME"_MA" $USER"_MA"/
+sudo chmod 770 $USER"_MA"/
+sudo chmod o+t $USER"_MA"/
+
+echo "A FOST ADAUGAT:" 
+cd ../../../../..
+cat etc/passwd | grep $USER"_MA"
+cat etc/group | egrep $NAME"_MA"
+EOF
+
+#
+
+#Inafara scriptului :
+ls -l | grep User_Group_Creator | grep **x
+chmod 700 User_Group_Creator
+echo -e "Scriptul se poate rula de catre utilizator,root\n"
+echo -e "Introduceti precum in cerinta\n"
+./User_Group_Creator
+cd ~/Proiect
+ls -alh 
+echo -e "Ziua 3 :\n"
+
+
+#DAY 3:
+
+cd ~
+mkdir backup
+mkdir archive
+touch archive_log
+chmod 777 archive_log
+sudo chown root archive_log
+sudo find /var/log -type f -name "*.log" | xargs -I '{}' sudo cp {} ~/backup
+cd ../..
+echo -e "Showing 50 lines of the verbouse output\n"
+sudo tar -cvf log.tar var/log | head -50 #&> archive_log
+sudo mv log.tar ~/archive
+cd ~
+cd archive
+echo -e "Showing 50 lines of the archive :\n"
+less log.tar | head -50
+cd ..
+
+echo -e "Made /Backup and archived .log files into archive/log\n"
+
+echo -e "Ziua 4:\n"
+
+#DAY 4:
+
+echo -e "Number of unique, lower-letter beggining-with' services on the device\n"
+umask 077
+if find  /etc/services | xargs -I '{}' cat {} | grep ^[a-z] | cut -d '#' -f1 | sort -u > ~/uniqueservices.txt ; then wc -l ~/uniqueservices.txt | cut -d ' ' -f 1 ; else echo error;fi
+
+cd ~
+
+echo -e "top 5 services"
+cat uniqueservices.txt | head -5
+echo -e "last 5 services"
+cat uniqueservices.txt | tail -5
+
+
+
+
+
+#OUTSIDE 
+#____________________
+
+
+#./script
+#./User_Group_Creator
+
+
